@@ -14,6 +14,8 @@ public class BossController : MonoBehaviour
 
     LiveManager liveManager;
 
+    EnemyCounterManager enemyCounterManager;
+
     void Awake()
     {
         liveManager = FindObjectOfType<LiveManager>();
@@ -22,6 +24,17 @@ public class BossController : MonoBehaviour
         {
             Debug.LogError("LiveManager not found in the scene!");
         }
+
+        enemyCounterManager = FindObjectOfType<EnemyCounterManager>();
+        if (enemyCounterManager == null)
+        {
+            Debug.LogError("EnemyCounterManager not found in the scene!");
+        }
+    }
+
+    void Start()
+    {
+        enemyCounterManager.enemyCount++;
     }
 
 
@@ -110,17 +123,14 @@ public class BossController : MonoBehaviour
                 Vector3 bulletPosition = transform.position + rotation * Vector3.up * distance;
                 GameObject bullet = Instantiate(bulletPrefab, bulletPosition, rotation);
                 bullet.GetComponent<Rigidbody>().velocity = rotation * Vector3.up * bulletSpeed + bossVelocity;
-                yield return new WaitForSeconds(0.1f);
-            }
-            for (int i = 360; i < 0; i -= 10)
-            {
-                float distance = 5f;
-                Quaternion rotation = Quaternion.Euler(90f, i, 0f);
-                Vector3 bulletPosition = transform.position + rotation * Vector3.up * distance;
-                GameObject bullet = Instantiate(bulletPrefab, bulletPosition, rotation);
+
+                rotation = Quaternion.Euler(90f, -i, 0f);
+                bulletPosition = transform.position + rotation * Vector3.up * distance;
+                bullet = Instantiate(bulletPrefab, bulletPosition, rotation);
                 bullet.GetComponent<Rigidbody>().velocity = rotation * Vector3.up * bulletSpeed + bossVelocity;
                 yield return new WaitForSeconds(0.1f);
             }
+
         }
         routineIsRunning = false;
 
@@ -128,7 +138,7 @@ public class BossController : MonoBehaviour
 
     IEnumerator radialBurst()
     {
-        for (int j = 0; j < 5; j++)
+        for (int j = 0; j < 6; j++)
         {
             for (int i = 90; i < 270; i += 10)
             {
@@ -144,6 +154,26 @@ public class BossController : MonoBehaviour
 
     }
 
+    IEnumerator radialBurstFaster()
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            float velocity = 10f;
+            for (int i = 90; i < 270; i += 10)
+            {
+                float distance = 5f;
+                Quaternion rotation = Quaternion.Euler(90f, i, 0f);
+                Vector3 bulletPosition = transform.position + rotation * Vector3.up * distance;
+                GameObject bullet = Instantiate(bulletPrefab, bulletPosition, rotation);
+                bullet.GetComponent<Rigidbody>().velocity = rotation * Vector3.up * velocity + bossVelocity;
+
+                velocity += 0.5f;
+            }
+            yield return new WaitForSeconds(0.3f); // Delay between bursts
+        }
+        routineIsRunning = false;
+
+    }
 
     IEnumerator octopusFire()
     {
@@ -215,6 +245,14 @@ public class BossController : MonoBehaviour
             GameObject bullet = Instantiate(bulletPrefab, bulletPosition, rotation);
             bullet.GetComponent<Rigidbody>().velocity = rotation * Vector3.up * bulletSpeed + bossVelocity;
         }
+        for (int i = 270; i < 900; i += 5)
+        {
+            float distance = 5f;
+            Quaternion rotation = Quaternion.Euler(90f, i, 0f);
+            Vector3 bulletPosition = transform.position + rotation * Vector3.up * distance;
+            GameObject bullet = Instantiate(bulletPrefab, bulletPosition, rotation);
+            bullet.GetComponent<Rigidbody>().velocity = rotation * Vector3.up * bulletSpeed + bossVelocity;
+        }
         yield return new WaitForSeconds(0.5f);
         routineIsRunning = false;
 
@@ -222,8 +260,8 @@ public class BossController : MonoBehaviour
 
     IEnumerator PlayMovement()
     {
-        float duration = 2.0f; // Adjust the duration of the movement
-        float distance = 25.0f; // Adjust the distance of the movement
+        float duration = 2.0f;
+        float distance = 25.0f;
 
         Vector3 startPos = transform.position;
         Vector3 leftPos = new Vector3(startPos.x - distance, startPos.y, startPos.z);
@@ -237,7 +275,7 @@ public class BossController : MonoBehaviour
         while (elapsedTime < duration)
         {
             transform.position = Vector3.Lerp(startPos, leftPos, elapsedTime / duration);
-            elapsedTime += Time.deltaTime * randomVelocityFactor; // Apply random velocity
+            elapsedTime += Time.deltaTime * randomVelocityFactor;
             yield return null;
         }
 
@@ -246,7 +284,7 @@ public class BossController : MonoBehaviour
         while (elapsedTime < duration)
         {
             transform.position = Vector3.Lerp(leftPos, rightPos, elapsedTime / duration);
-            elapsedTime += Time.deltaTime * randomVelocityFactor; // Apply random velocity
+            elapsedTime += Time.deltaTime * randomVelocityFactor;
             yield return null;
         }
 
@@ -259,7 +297,6 @@ public class BossController : MonoBehaviour
             yield return null;
         }
 
-        // Reset the flag so the movement can be triggered again
         movementIsRunning = false;
     }
 
@@ -292,6 +329,9 @@ public class BossController : MonoBehaviour
             case 5:
                 StartCoroutine(lineFire());
                 break;
+            case 6:
+                StartCoroutine(radialBurstFaster());
+                break;
         }
 
 
@@ -301,6 +341,7 @@ public class BossController : MonoBehaviour
     void OnDestroy()
     {
         Debug.Log("Enemy destroyed");
+        enemyCounterManager.enemyCount--;
         liveManager.showWin();
     }
 

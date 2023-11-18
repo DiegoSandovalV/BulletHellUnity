@@ -14,6 +14,7 @@ public class EnemyFire : MonoBehaviour
 
     LevelManager levelManager;
 
+    EnemyCounterManager enemyCounterManager;
     void Awake()
     {
         levelManager = FindObjectOfType<LevelManager>();
@@ -21,6 +22,17 @@ public class EnemyFire : MonoBehaviour
         {
             Debug.LogError("LevelManager not found in the scene!");
         }
+
+        enemyCounterManager = FindObjectOfType<EnemyCounterManager>();
+        if (enemyCounterManager == null)
+        {
+            Debug.LogError("EnemyCounterManager not found in the scene!");
+        }
+    }
+
+    void Start()
+    {
+        enemyCounterManager.enemyCount++;
     }
 
 
@@ -220,6 +232,7 @@ public class EnemyFire : MonoBehaviour
     {
         Debug.Log("Enemy destroyed");
         levelManager.enemiesKilled++;
+        enemyCounterManager.enemyCount--;
     }
 
 

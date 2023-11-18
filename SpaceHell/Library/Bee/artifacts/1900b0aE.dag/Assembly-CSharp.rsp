@@ -365,6 +365,7 @@
 "Assets/Scripts/Bullets/bulletCounter.cs"
 "Assets/Scripts/Bullets/bulletPlayer.cs"
 "Assets/Scripts/Enemies/EnemyFire.cs"
+"Assets/Scripts/Managers/EnemyCounterManager.cs"
 "Assets/Scripts/Managers/levelManager.cs"
 "Assets/Scripts/Managers/liveManager.cs"
 "Assets/Scripts/Managers/terrainManager.cs"

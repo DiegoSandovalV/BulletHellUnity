@@ -11,12 +11,15 @@ public class PlayerController : MonoBehaviour
 
     public float speedDefault = 60f;
 
+    AudioSource audioSource;
+
     float currSpeed;
 
     // Start is called before the first frame update
     void Start()
     {
         currSpeed = speedDefault;
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -85,6 +88,8 @@ public class PlayerController : MonoBehaviour
 
         GameObject bullet = Instantiate(bulletPrefab, transform.position + new Vector3(0f, 0f, 8f), rotation);
         bullet.GetComponent<Rigidbody>().velocity = rotation * Vector3.up * 50f;
+
+        audioSource.Play();
 
     }
 
